@@ -78,24 +78,5 @@ public class TaskViewModel extends ViewModel {
             default:
                 return taskRepository.getTasks(0);
         }
-
     }
-    /*
-    public LiveData<List<Task>> getTasksByNameASC(){
-      return taskRepository.getTasks(1);
-    };
-
-    public LiveData<List<Task>> getTasksByNameDESC(){
-        return taskRepository.getTasks(2);
-    };
-
-    public LiveData<List<Task>> getTasksByDateASC(){
-        return taskRepository.getTasks(3);
-    };
-
-    public LiveData<List<Task>> getTasksByDateDESC(){
-        return taskRepository.getTasks(4);
-    };
-
-     */
 }

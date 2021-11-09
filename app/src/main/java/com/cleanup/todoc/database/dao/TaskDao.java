@@ -26,7 +26,6 @@ public interface TaskDao {
 
 
     // -- Sort list --
-
     @Query("SELECT * from Task ORDER BY name ASC")
     LiveData<List<Task>> getTasksByNameASC();
 

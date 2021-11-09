@@ -44,6 +44,12 @@ import java.util.List;
  * @author Gaëtan HERFRAY
  */
 public class MainActivity extends AppCompatActivity implements TasksAdapter.DeleteTaskListener {
+
+    // DATA
+    private TaskViewModel taskViewModel;
+    private static int TASK_ID = 1;
+    private static int PROJECT_ID = 1;
+
     /**
      * List of all projects available in the application
      */
@@ -102,11 +108,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     @NonNull
     private TextView lblNoTasks;
 
-    // DATA
-    private TaskViewModel taskViewModel;
-    private static int TASK_ID = 1;
-    private static int PROJECT_ID = 1;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         this.getProjects();
     }
 
+
     private void configureViewModel() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
         this.taskViewModel = new ViewModelProvider(this, viewModelFactory).get(TaskViewModel.class);
@@ -140,6 +142,10 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
     private void getTasks(){
         this.taskViewModel.getTasks().observe(this, this::updateTaskList);
+    }
+
+    private void updateSortMethod(SortMethod sortMethod){
+        this.taskViewModel.updateSortMethod(sortMethod).observe(this, this::updateTaskList);
     }
 
     private void deleteTask(Task task) {
@@ -178,16 +184,12 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         int id = item.getItemId();
 
         if (id == R.id.filter_alphabetical) {
-          //  taskViewModel.updateSortMethod(SortMethod.ALPHABETICAL);
             sortMethod = ALPHABETICAL;
         } else if (id == R.id.filter_alphabetical_inverted) {
-
             sortMethod = ALPHABETICAL_INVERTED;
         } else if (id == R.id.filter_oldest_first) {
-
             sortMethod = SortMethod.OLD_FIRST;
         } else if (id == R.id.filter_recent_first) {
-
             sortMethod = RECENT_FIRST;
         }
 
@@ -227,7 +229,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             // If both project and name of the task have been set
             else if (taskProject != null) {
                 // TODO: Replace this by id of persisted task
-                long id = (long) (Math.random() * 50000);
+               // long id = (long) (Math.random() * 50000);
+                long id = 0;
                 Task task = new Task(
                         id,
                         taskProject.getId(),
@@ -263,7 +266,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         dialogEditText = dialog.findViewById(R.id.txt_task_name);
         dialogSpinner = dialog.findViewById(R.id.project_spinner);
 
-
         populateDialogSpinner();
     }
 
@@ -289,26 +291,27 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             listTasks.setVisibility(View.VISIBLE);
             taskViewModel.getTasks();
 
-           // taskViewModel.updateSortMethod(sortMethod);
+
             switch (sortMethod) {
                 case ALPHABETICAL:
-                  //  taskViewModel.updateSortMethod(ALPHABETICAL);
-                    Collections.sort(tasks, new Task.TaskAZComparator());
+                   this.updateSortMethod(ALPHABETICAL);
+                   // Collections.sort(tasks, new Task.TaskAZComparator());
                     break;
                 case ALPHABETICAL_INVERTED:
-
-                   Collections.sort(tasks, new Task.TaskZAComparator());
+                    this.updateSortMethod(ALPHABETICAL_INVERTED);
+                   // Collections.sort(tasks, new Task.TaskZAComparator());
                     break;
                 case RECENT_FIRST:
-                    Collections.sort(tasks, new Task.TaskRecentComparator());
+                    this.updateSortMethod(RECENT_FIRST);
+                  //  Collections.sort(tasks, new Task.TaskRecentComparator());
 
                     break;
                 case OLD_FIRST:
-                    Collections.sort(tasks, new Task.TaskOldComparator());
-
+                    this.updateSortMethod(OLD_FIRST);
+                  //  Collections.sort(tasks, new Task.TaskOldComparator());
                     break;
-
             }
+            this.updateSortMethod(sortMethod);
             adapter.updateTasks(tasks);
         }
     }
