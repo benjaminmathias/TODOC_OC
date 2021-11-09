@@ -1,5 +1,11 @@
 package com.cleanup.todoc.ui;
 
+import static com.cleanup.todoc.ui.MainActivity.SortMethod.ALPHABETICAL;
+import static com.cleanup.todoc.ui.MainActivity.SortMethod.ALPHABETICAL_INVERTED;
+import static com.cleanup.todoc.ui.MainActivity.SortMethod.NONE;
+import static com.cleanup.todoc.ui.MainActivity.SortMethod.OLD_FIRST;
+import static com.cleanup.todoc.ui.MainActivity.SortMethod.RECENT_FIRST;
+
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,16 +21,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cleanup.todoc.R;
+import com.cleanup.todoc.injections.Injection;
+import com.cleanup.todoc.injections.ViewModelFactory;
 import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>Home activity of the application which is displayed when the user opens the app.</p>
@@ -36,7 +47,9 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     /**
      * List of all projects available in the application
      */
-    private final Project[] allProjects = Project.getAllProjects();
+   // private final Project[] allProjects = Project.getAllProjects();
+    @NonNull
+    private final ArrayList<Project> projects = new ArrayList<>();
 
     /**
      * List of all current tasks of the application
@@ -89,6 +102,11 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     @NonNull
     private TextView lblNoTasks;
 
+    // DATA
+    private TaskViewModel taskViewModel;
+    private static int TASK_ID = 1;
+    private static int PROJECT_ID = 1;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,6 +125,46 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
                 showAddTaskDialog();
             }
         });
+
+        this.configureViewModel();
+        this.getTasks();
+        this.getProjects();
+    }
+
+    private void configureViewModel() {
+        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
+        this.taskViewModel = new ViewModelProvider(this, viewModelFactory).get(TaskViewModel.class);
+        this.taskViewModel.init(TASK_ID, PROJECT_ID);
+    }
+
+
+    private void getTasks(){
+        this.taskViewModel.getTasks().observe(this, this::updateTaskList);
+    }
+
+    private void deleteTask(Task task) {
+        this.taskViewModel.deleteTask(task.getId());
+    }
+
+    private void updateTaskList(List<Task> tasks) {
+        this.tasks.clear();
+        this.tasks.addAll(tasks);
+        if (tasks.size() > 0) {
+            lblNoTasks.setVisibility(View.GONE);
+        } else {
+            lblNoTasks.setVisibility(View.VISIBLE);
+        }
+        this.adapter.updateTasks(tasks);
+    }
+
+    private void getProjects(){
+        this.taskViewModel.getProjects().observe(this, this::projectList);
+    }
+
+
+    private void projectList(List<Project> projects){
+        this.projects.addAll(projects);
+        this.populateDialogSpinner();
     }
 
     @Override
@@ -120,13 +178,17 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         int id = item.getItemId();
 
         if (id == R.id.filter_alphabetical) {
-            sortMethod = SortMethod.ALPHABETICAL;
+          //  taskViewModel.updateSortMethod(SortMethod.ALPHABETICAL);
+            sortMethod = ALPHABETICAL;
         } else if (id == R.id.filter_alphabetical_inverted) {
-            sortMethod = SortMethod.ALPHABETICAL_INVERTED;
+
+            sortMethod = ALPHABETICAL_INVERTED;
         } else if (id == R.id.filter_oldest_first) {
+
             sortMethod = SortMethod.OLD_FIRST;
         } else if (id == R.id.filter_recent_first) {
-            sortMethod = SortMethod.RECENT_FIRST;
+
+            sortMethod = RECENT_FIRST;
         }
 
         updateTasks();
@@ -137,6 +199,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     @Override
     public void onDeleteTask(Task task) {
         tasks.remove(task);
+        deleteTask(task);
         updateTasks();
     }
 
@@ -165,8 +228,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             else if (taskProject != null) {
                 // TODO: Replace this by id of persisted task
                 long id = (long) (Math.random() * 50000);
-
-
                 Task task = new Task(
                         id,
                         taskProject.getId(),
@@ -174,6 +235,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
                         new Date().getTime()
                 );
 
+
+                this.taskViewModel.createTask(task);
                 addTask(task);
 
                 dialogInterface.dismiss();
@@ -183,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
                 dialogInterface.dismiss();
             }
         }
-        // If dialog is aloready closed
+        // If dialog is already closed
         else {
             dialogInterface.dismiss();
         }
@@ -199,6 +262,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
         dialogEditText = dialog.findViewById(R.id.txt_task_name);
         dialogSpinner = dialog.findViewById(R.id.project_spinner);
+
 
         populateDialogSpinner();
     }
@@ -223,18 +287,25 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         } else {
             lblNoTasks.setVisibility(View.GONE);
             listTasks.setVisibility(View.VISIBLE);
+            taskViewModel.getTasks();
+
+           // taskViewModel.updateSortMethod(sortMethod);
             switch (sortMethod) {
                 case ALPHABETICAL:
+                  //  taskViewModel.updateSortMethod(ALPHABETICAL);
                     Collections.sort(tasks, new Task.TaskAZComparator());
                     break;
                 case ALPHABETICAL_INVERTED:
-                    Collections.sort(tasks, new Task.TaskZAComparator());
+
+                   Collections.sort(tasks, new Task.TaskZAComparator());
                     break;
                 case RECENT_FIRST:
                     Collections.sort(tasks, new Task.TaskRecentComparator());
+
                     break;
                 case OLD_FIRST:
                     Collections.sort(tasks, new Task.TaskOldComparator());
+
                     break;
 
             }
@@ -289,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      * Sets the data of the Spinner with projects to associate to a new task
      */
     private void populateDialogSpinner() {
-        final ArrayAdapter<Project> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, allProjects);
+        final ArrayAdapter<Project> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, projects);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         if (dialogSpinner != null) {
             dialogSpinner.setAdapter(adapter);
@@ -299,7 +370,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     /**
      * List of all possible sort methods for task
      */
-    private enum SortMethod {
+    public enum SortMethod {
         /**
          * Sort alphabetical by name
          */
