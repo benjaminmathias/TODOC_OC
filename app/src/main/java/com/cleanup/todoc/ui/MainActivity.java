@@ -1,16 +1,16 @@
 package com.cleanup.todoc.ui;
 
-import static com.cleanup.todoc.ui.MainActivity.SortMethod.ALPHABETICAL;
-import static com.cleanup.todoc.ui.MainActivity.SortMethod.ALPHABETICAL_INVERTED;
-import static com.cleanup.todoc.ui.MainActivity.SortMethod.NONE;
-import static com.cleanup.todoc.ui.MainActivity.SortMethod.OLD_FIRST;
-import static com.cleanup.todoc.ui.MainActivity.SortMethod.RECENT_FIRST;
+import static com.cleanup.todoc.model.SortMethod.ALPHABETICAL;
+import static com.cleanup.todoc.model.SortMethod.ALPHABETICAL_INVERTED;
+import static com.cleanup.todoc.model.SortMethod.OLD_FIRST;
+import static com.cleanup.todoc.model.SortMethod.RECENT_FIRST;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,7 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,10 +29,10 @@ import com.cleanup.todoc.R;
 import com.cleanup.todoc.injections.Injection;
 import com.cleanup.todoc.injections.ViewModelFactory;
 import com.cleanup.todoc.model.Project;
+import com.cleanup.todoc.model.SortMethod;
 import com.cleanup.todoc.model.Task;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -53,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     /**
      * List of all projects available in the application
      */
-   // private final Project[] allProjects = Project.getAllProjects();
+    // private final Project[] allProjects = Project.getAllProjects();
     @NonNull
     private final ArrayList<Project> projects = new ArrayList<>();
 
@@ -71,8 +70,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     /**
      * The sort method to be used to display tasks
      */
-    @NonNull
-    private SortMethod sortMethod = SortMethod.NONE;
+    //@NonNull
+    //private SortMethod sortMethod = SortMethod.NONE;
 
     /**
      * Dialog to create a new task
@@ -140,12 +139,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     }
 
 
-    private void getTasks(){
+    private void getTasks() {
         this.taskViewModel.getTasks().observe(this, this::updateTaskList);
-    }
-
-    private void updateSortMethod(SortMethod sortMethod){
-        this.taskViewModel.updateSortMethod(sortMethod).observe(this, this::updateTaskList);
     }
 
     private void deleteTask(Task task) {
@@ -163,14 +158,13 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         this.adapter.updateTasks(tasks);
     }
 
-    private void getProjects(){
+    private void getProjects() {
         this.taskViewModel.getProjects().observe(this, this::projectList);
     }
 
-
-    private void projectList(List<Project> projects){
+    private void projectList(List<Project> projects) {
+        this.projects.clear();
         this.projects.addAll(projects);
-        this.populateDialogSpinner();
     }
 
     @Override
@@ -184,13 +178,13 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         int id = item.getItemId();
 
         if (id == R.id.filter_alphabetical) {
-            sortMethod = ALPHABETICAL;
+            taskViewModel.updateSortMethod(ALPHABETICAL);
         } else if (id == R.id.filter_alphabetical_inverted) {
-            sortMethod = ALPHABETICAL_INVERTED;
+            taskViewModel.updateSortMethod(ALPHABETICAL_INVERTED);
         } else if (id == R.id.filter_oldest_first) {
-            sortMethod = SortMethod.OLD_FIRST;
+            taskViewModel.updateSortMethod(OLD_FIRST);
         } else if (id == R.id.filter_recent_first) {
-            sortMethod = RECENT_FIRST;
+            taskViewModel.updateSortMethod(RECENT_FIRST);
         }
 
         updateTasks();
@@ -229,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             // If both project and name of the task have been set
             else if (taskProject != null) {
                 // TODO: Replace this by id of persisted task
-               // long id = (long) (Math.random() * 50000);
+                // long id = (long) (Math.random() * 50000);
                 long id = 0;
                 Task task = new Task(
                         id,
@@ -245,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
                 dialogInterface.dismiss();
             }
             // If name has been set, but project has not been set (this should never occur)
-            else{
+            else {
                 dialogInterface.dismiss();
             }
         }
@@ -289,29 +283,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         } else {
             lblNoTasks.setVisibility(View.GONE);
             listTasks.setVisibility(View.VISIBLE);
-            taskViewModel.getTasks();
 
-
-            switch (sortMethod) {
-                case ALPHABETICAL:
-                   this.updateSortMethod(ALPHABETICAL);
-                   // Collections.sort(tasks, new Task.TaskAZComparator());
-                    break;
-                case ALPHABETICAL_INVERTED:
-                    this.updateSortMethod(ALPHABETICAL_INVERTED);
-                   // Collections.sort(tasks, new Task.TaskZAComparator());
-                    break;
-                case RECENT_FIRST:
-                    this.updateSortMethod(RECENT_FIRST);
-                  //  Collections.sort(tasks, new Task.TaskRecentComparator());
-
-                    break;
-                case OLD_FIRST:
-                    this.updateSortMethod(OLD_FIRST);
-                  //  Collections.sort(tasks, new Task.TaskOldComparator());
-                    break;
-            }
-            this.updateSortMethod(sortMethod);
+            getTasks();
             adapter.updateTasks(tasks);
         }
     }
@@ -370,29 +343,4 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         }
     }
 
-    /**
-     * List of all possible sort methods for task
-     */
-    public enum SortMethod {
-        /**
-         * Sort alphabetical by name
-         */
-        ALPHABETICAL,
-        /**
-         * Inverted sort alphabetical by name
-         */
-        ALPHABETICAL_INVERTED,
-        /**
-         * Lastly created first
-         */
-        RECENT_FIRST,
-        /**
-         * First created first
-         */
-        OLD_FIRST,
-        /**
-         * No sort
-         */
-        NONE
-    }
 }

@@ -1,20 +1,29 @@
 package com.cleanup.todoc.ui;
 
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.cleanup.todoc.model.Project;
+import com.cleanup.todoc.model.SortMethod;
 import com.cleanup.todoc.model.Task;
+import com.cleanup.todoc.repositories.ProjectRepository;
 import com.cleanup.todoc.repositories.TaskRepository;
 
 import java.util.List;
 import java.util.concurrent.Executor;
 
 public class TaskViewModel extends ViewModel {
+    /**
+     * The sort method to be used to display tasks
+     */
+    @NonNull
+    private SortMethod sortMethod = SortMethod.NONE;
 
     private final TaskRepository taskRepository;
+    private final ProjectRepository projectRepository;
     private final Executor executor;
 
     // Data
@@ -24,8 +33,9 @@ public class TaskViewModel extends ViewModel {
     @Nullable
     private LiveData<Project> currentProject;
 
-    public TaskViewModel(TaskRepository taskRepository, Executor executor) {
+    public TaskViewModel(TaskRepository taskRepository, ProjectRepository projectRepository, Executor executor) {
         this.taskRepository = taskRepository;
+        this.projectRepository = projectRepository;
         this.executor = executor;
     }
 
@@ -34,12 +44,12 @@ public class TaskViewModel extends ViewModel {
             return;
         }
         currentTask = taskRepository.getTask(taskId);
-        currentProject = taskRepository.getProject(projectId);
+        currentProject = projectRepository.getProject(projectId);
     }
 
     // For Task
     public LiveData<List<Task>> getTasks() {
-        return taskRepository.getTasks(0);
+        return taskRepository.getTasks(sortMethod);
     }
 
 
@@ -57,26 +67,11 @@ public class TaskViewModel extends ViewModel {
 
     // For Project
     public LiveData<List<Project>> getProjects() {
-        return taskRepository.getProjects();
+        return projectRepository.getProjects();
     }
 
     // For Sorting
-    public LiveData<List<Task>> updateSortMethod(MainActivity.SortMethod sortMethod) {
-        switch (sortMethod) {
-            case ALPHABETICAL:
-                return taskRepository.getTasks(1);
-
-            case ALPHABETICAL_INVERTED:
-                return taskRepository.getTasks(2);
-
-            case RECENT_FIRST:
-                return taskRepository.getTasks(3);
-
-            case OLD_FIRST:
-                return taskRepository.getTasks(4);
-
-            default:
-                return taskRepository.getTasks(0);
-        }
+    public void updateSortMethod(SortMethod sortMethod) {
+        this.sortMethod = sortMethod;
     }
 }

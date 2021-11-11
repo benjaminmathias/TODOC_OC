@@ -1,15 +1,9 @@
 package com.cleanup.todoc;
 
 
-import static android.content.ContentValues.TAG;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-
-import android.util.Log;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.lifecycle.LiveData;
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -47,7 +41,6 @@ public class TaskDaoTest {
                 .allowMainThreadQueries()
                 .build();
 
-        // TODO: vérifier avec mentor
         this.dataBase.projectDao().insertProject(PROJECT_DEMO);
     }
 
@@ -104,30 +97,24 @@ public class TaskDaoTest {
 
 
     // SORTING QUERY TESTS
-
     /**
-     *  Retrieved list contain A THEN B
+     *  db contain A THEN B
      */
     @Test
     public void sortTasksByNameASC1() throws InterruptedException {
-        // Insert tasks
+        // Insert tasks in db
         this.dataBase.taskDao().insertTask(TASK_DEMO); // A
         this.dataBase.taskDao().insertTask(TASK_DEMO_2); // B
-
-        // Retrieving all tasks
-        List<Task> tasks = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasks());
 
         // Create a new sorted List of Tasks
         List<Task> sortedTask = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasksByNameASC());
 
-        Log.d("tag","Résultat NameASC1: " + tasks.get(0).getName() + " & " + sortedTask.get(0).getName());
-
-        // Assert that the first task in the tasks list have the same name has the first task in the sorted list
-        assertEquals(tasks.get(0).getName(), sortedTask.get(0).getName());
+        // Assert that the first task in db have the same name has the first task in the sorted list
+        assertEquals(TASK_DEMO.getName(), sortedTask.get(0).getName());
     }
 
     /**
-     *  Retrieved list contain B THEN A
+     *  db contain B THEN A
      */
     @Test
     public void sortTasksByNameASC2() throws InterruptedException {
@@ -135,20 +122,15 @@ public class TaskDaoTest {
         this.dataBase.taskDao().insertTask(TASK_DEMO_2); // B
         this.dataBase.taskDao().insertTask(TASK_DEMO); // A
 
-        // Retrieving all tasks
-        List<Task> tasks = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasks());
-
         // Create a new sorted List of Tasks
         List<Task> sortedTask = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasksByNameASC());
 
-        Log.d("tag","Résultat NameASC2: " + tasks.get(0).getName() + " & " + sortedTask.get(0).getName());
-
-        // Assert that the first task in the tasks list doesn't have the same name has the first task in the sorted list
-        assertNotEquals(tasks.get(0).getName(), sortedTask.get(0).getName());
+        // Assert that the first task in the sorted list contains TASK_DEMO name
+        assertEquals(TASK_DEMO.getName(), sortedTask.get(0).getName());
     }
 
     /**
-     *  Retrieved list contain A THEN B
+     *  db contain A THEN B
      */
     @Test
     public void sortTasksByNameDESC1() throws InterruptedException {
@@ -156,20 +138,15 @@ public class TaskDaoTest {
         this.dataBase.taskDao().insertTask(TASK_DEMO); // A
         this.dataBase.taskDao().insertTask(TASK_DEMO_2); // B
 
-        // Retrieving all tasks
-        List<Task> tasks = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasks());
-
         // Sort tasks
         List<Task> sortedTask = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasksByNameDESC());
 
-        Log.d("tag","Résultat NameDESC1 : " + tasks.get(0).getName() + " & " + sortedTask.get(0).getName());
-
-        // Assert that the first task in the tasks list doesn't have the same name has the first task in the sorted list
-        assertNotEquals(tasks.get(0).getName(), sortedTask.get(0).getName());
+        // Assert that the first task in the sorted list contains TASK_DEMO_2 name
+        assertEquals(TASK_DEMO_2.getName(), sortedTask.get(0).getName());
     }
 
     /**
-     *  Retrieved list contain B THEN A
+     *  db contain B THEN A
      */
     @Test
     public void sortTasksByNameDESC2() throws InterruptedException {
@@ -177,16 +154,11 @@ public class TaskDaoTest {
         this.dataBase.taskDao().insertTask(TASK_DEMO_2); // B
         this.dataBase.taskDao().insertTask(TASK_DEMO); // A
 
-        // Retrieving all tasks
-        List<Task> tasks = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasks());
-
         // Sort tasks
         List<Task> sortedTask = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasksByNameDESC());
 
-        Log.d("tag","Résultat NameDESC2 : " + tasks.get(0).getName() + " & " + sortedTask.get(0).getName());
-
-        // Assert that the first task in the tasks list have the same name has the first task in the sorted list
-        assertEquals(tasks.get(0).getName(), sortedTask.get(0).getName());
+        // Assert that the first task in the sorted list contains TASK_DEMO_2 name
+        assertEquals(TASK_DEMO_2.getName(), sortedTask.get(0).getName());
     }
 
     @Test
@@ -195,16 +167,11 @@ public class TaskDaoTest {
         this.dataBase.taskDao().insertTask(TASK_DEMO); // 1
         this.dataBase.taskDao().insertTask(TASK_DEMO_2); // 2
 
-        // Retrieving all tasks
-        List<Task> tasks = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasks());
-
         // Sort tasks
         List<Task> sortedTask = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasksByDateASC());
 
-        Log.d("tag","Résultat : " + tasks.get(0).getCreationTimestamp() + " & " + sortedTask.get(0).getCreationTimestamp());
-
-        // Assert that the first task in task list have the same timestamp has the first task in the sorted list
-        assertEquals(tasks.get(0).getCreationTimestamp(), sortedTask.get(0).getCreationTimestamp());
+        // Assert that the first task in the sorted list has the same timestamp as TASK_DEMO
+        assertEquals(TASK_DEMO.getCreationTimestamp(), sortedTask.get(0).getCreationTimestamp());
 
     }
 
@@ -214,16 +181,11 @@ public class TaskDaoTest {
         this.dataBase.taskDao().insertTask(TASK_DEMO_2); // 2
         this.dataBase.taskDao().insertTask(TASK_DEMO); // 1
 
-        // Retrieving all tasks
-        List<Task> tasks = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasks());
-
         // Sort tasks
         List<Task> sortedTask = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasksByDateASC());
 
-        Log.d("tag","Résultat DateASC2 : " + tasks.get(0).getCreationTimestamp() + " & " + sortedTask.get(0).getCreationTimestamp());
-
-        // Assert that the first task in task list doesn't have the same timestamp has the first task in the sorted list
-        assertNotEquals(tasks.get(0).getCreationTimestamp(), sortedTask.get(0).getCreationTimestamp());
+        // Assert that the first task in the sorted list has the same timestamp as TASK_DEMO
+        assertEquals(TASK_DEMO.getCreationTimestamp(), sortedTask.get(0).getCreationTimestamp());
     }
 
     @Test
@@ -232,16 +194,11 @@ public class TaskDaoTest {
         this.dataBase.taskDao().insertTask(TASK_DEMO); // 1
         this.dataBase.taskDao().insertTask(TASK_DEMO_2); // 2
 
-        // Retrieving all tasks
-        List<Task> tasks = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasks());
-
         // Sort tasks
         List<Task> sortedTask = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasksByDateDESC());
 
-        Log.d("tag","Résultat DateDESC1 : " + tasks.get(0).getCreationTimestamp() + " & " + sortedTask.get(0).getCreationTimestamp());
-
-        // Assert that the first task in task list doesn't have the same timestamp has the first task in the sorted list
-        assertNotEquals(tasks.get(0).getCreationTimestamp(), sortedTask.get(0).getCreationTimestamp());
+        // Assert that the first task in the sorted list has the same timestamp as TASK_DEMO_2
+        assertEquals(TASK_DEMO_2.getCreationTimestamp(), sortedTask.get(0).getCreationTimestamp());
     }
 
     @Test
@@ -250,15 +207,10 @@ public class TaskDaoTest {
         this.dataBase.taskDao().insertTask(TASK_DEMO_2); // 2
         this.dataBase.taskDao().insertTask(TASK_DEMO); // 1
 
-        // Retrieving all tasks
-        List<Task> tasks = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasks());
-
         // Sort tasks
         List<Task> sortedTask = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasksByDateDESC());
 
-        Log.d("tag","Résultat DateDESC2 : " + tasks.get(0).getCreationTimestamp() + " & " + sortedTask.get(0).getCreationTimestamp());
-
-        // Assert that the first task in task list have the same timestamp has the first task in the sorted list
-        assertEquals(tasks.get(0).getCreationTimestamp(), sortedTask.get(0).getCreationTimestamp());
+        // Assert that the first task in the sorted list has the same timestamp as TASK_DEMO_2
+        assertEquals(TASK_DEMO_2.getCreationTimestamp(), sortedTask.get(0).getCreationTimestamp());
     }
 }

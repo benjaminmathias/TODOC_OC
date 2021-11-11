@@ -30,7 +30,7 @@ import org.junit.runner.RunWith;
 import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
-public class MainActivityTest {
+public class MainActivityRoomTest {
 
     private MainActivity activity;
 
@@ -58,6 +58,7 @@ public class MainActivityTest {
         dataBase.close();
     }
 
+    // TODO : revoir tests
     @Test
     public void addTask() throws InterruptedException {
         activity = mActivityTestRule.getActivity();
@@ -71,15 +72,7 @@ public class MainActivityTest {
 
         tasks = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasks());
         // assertEquals(1, tasks.size());
-        assertTrue(tasks.get(0).getName().equals("Tâche exemple 1"));
-    }
-
-    @Test
-    public void clearTasks() throws InterruptedException {
-        activity = mActivityTestRule.getActivity();
-        List<Task> tasks = LiveDataTestUtil.getValue(this.dataBase.taskDao().getTasks());
-        tasks.clear();
-        assertEquals(tasks.size(), 0);
+        assertEquals("Tâche exemple 1", tasks.get(0).getName());
     }
 
     @Test

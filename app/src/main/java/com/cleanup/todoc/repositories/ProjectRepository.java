@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ProjectRepository {
 
-    private ProjectDao mProjectDao;
+    private final ProjectDao mProjectDao;
 
     public ProjectRepository(ProjectDao mProjectDao) {
         this.mProjectDao = mProjectDao;
