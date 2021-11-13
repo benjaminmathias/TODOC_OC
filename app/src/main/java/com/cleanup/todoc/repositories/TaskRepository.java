@@ -18,8 +18,12 @@ public class TaskRepository {
         this.mTaskDao = mTaskDao;
     }
 
-    // For Task
-    // Return list of Task
+    /**
+     * Return a list of task corresponding to sortMethod
+     *
+     * @param sortMethod the sorting method
+     * @return a list of task based on sortMethod
+     */
     public LiveData<List<Task>> getTasks(SortMethod sortMethod) {
         switch (sortMethod) {
             case ALPHABETICAL:

@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,7 +28,6 @@ import com.cleanup.todoc.R;
 import com.cleanup.todoc.injections.Injection;
 import com.cleanup.todoc.injections.ViewModelFactory;
 import com.cleanup.todoc.model.Project;
-import com.cleanup.todoc.model.SortMethod;
 import com.cleanup.todoc.model.Task;
 
 import java.util.ArrayList;
@@ -52,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     /**
      * List of all projects available in the application
      */
-    // private final Project[] allProjects = Project.getAllProjects();
     @NonNull
     private final ArrayList<Project> projects = new ArrayList<>();
 
@@ -66,12 +63,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      * The adapter which handles the list of tasks
      */
     private final TasksAdapter adapter = new TasksAdapter(tasks, this);
-
-    /**
-     * The sort method to be used to display tasks
-     */
-    //@NonNull
-    //private SortMethod sortMethod = SortMethod.NONE;
 
     /**
      * Dialog to create a new task
@@ -132,21 +123,24 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     }
 
 
+    // Setup ViewModel
     private void configureViewModel() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
         this.taskViewModel = new ViewModelProvider(this, viewModelFactory).get(TaskViewModel.class);
         this.taskViewModel.init(TASK_ID, PROJECT_ID);
     }
 
-
+    // Retrieve Tasks
     private void getTasks() {
         this.taskViewModel.getTasks().observe(this, this::updateTaskList);
     }
 
+    // Delete a task
     private void deleteTask(Task task) {
         this.taskViewModel.deleteTask(task.getId());
     }
 
+    // Update the RecyclerView containing tasks
     private void updateTaskList(List<Task> tasks) {
         this.tasks.clear();
         this.tasks.addAll(tasks);
@@ -158,10 +152,12 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         this.adapter.updateTasks(tasks);
     }
 
+    // Retrieves Projects
     private void getProjects() {
         this.taskViewModel.getProjects().observe(this, this::projectList);
     }
 
+    // List of project
     private void projectList(List<Project> projects) {
         this.projects.clear();
         this.projects.addAll(projects);

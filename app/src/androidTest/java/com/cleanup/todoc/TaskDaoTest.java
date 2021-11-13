@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
+import androidx.room.RoomDatabase;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -50,7 +51,7 @@ public class TaskDaoTest {
         dataBase.close();
     }
 
-    // TODO: fix this
+
     @Test
     public void insertAndGetTask() throws InterruptedException {
         // Adding a new task
@@ -161,6 +162,9 @@ public class TaskDaoTest {
         assertEquals(TASK_DEMO_2.getName(), sortedTask.get(0).getName());
     }
 
+    /**
+     * db contain 1 THEN 2
+     */
     @Test
     public void sortTasksByDateASC1() throws InterruptedException {
         // Insert tasks
@@ -175,6 +179,9 @@ public class TaskDaoTest {
 
     }
 
+    /**
+     * db contain 2 THEN 1
+     */
     @Test
     public void sortTasksByDateASC2() throws InterruptedException {
         // Insert tasks
@@ -188,6 +195,9 @@ public class TaskDaoTest {
         assertEquals(TASK_DEMO.getCreationTimestamp(), sortedTask.get(0).getCreationTimestamp());
     }
 
+    /**
+     * db contain 1 THEN 2
+     */
     @Test
     public void sortTasksByDateDESC1() throws InterruptedException {
         // Insert tasks
@@ -201,6 +211,9 @@ public class TaskDaoTest {
         assertEquals(TASK_DEMO_2.getCreationTimestamp(), sortedTask.get(0).getCreationTimestamp());
     }
 
+    /**
+     * db contain 2 THEN 1
+     */
     @Test
     public void sortTasksByDateDESC2() throws InterruptedException {
         // Insert tasks

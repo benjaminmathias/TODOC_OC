@@ -16,9 +16,8 @@ import java.util.List;
 import java.util.concurrent.Executor;
 
 public class TaskViewModel extends ViewModel {
-    /**
-     * The sort method to be used to display tasks
-     */
+
+    // The SortMethod used to display Tasks
     @NonNull
     private SortMethod sortMethod = SortMethod.NONE;
 
@@ -65,13 +64,13 @@ public class TaskViewModel extends ViewModel {
         });
     }
 
-    // For Project
-    public LiveData<List<Project>> getProjects() {
-        return projectRepository.getProjects();
-    }
-
     // For Sorting
     public void updateSortMethod(SortMethod sortMethod) {
         this.sortMethod = sortMethod;
+    }
+
+    // For Project
+    public LiveData<List<Project>> getProjects() {
+        return projectRepository.getProjects();
     }
 }

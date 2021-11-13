@@ -24,6 +24,7 @@ public abstract class TodocDatabase extends RoomDatabase {
     // Singleton
     private static volatile TodocDatabase INSTANCE;
 
+    // Used to run db operations asynchronously on a background thread
     private static final int NUMBER_OF_THREADS = 4;
     static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
@@ -47,6 +48,7 @@ public abstract class TodocDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
+    // Callback executed ONLY the FIRST time the app is opened to add Projects to the Project Table
     private static RoomDatabase.Callback prepopulateDatabase = new RoomDatabase.Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {

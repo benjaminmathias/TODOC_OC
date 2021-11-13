@@ -12,29 +12,38 @@ import java.util.List;
 @Dao
 public interface TaskDao {
 
-    @Query("SELECT * FROM Task")
-    LiveData<List<Task>> getTasks();
-
+    // READ a specific task
     @Query("SELECT * FROM Task WHERE id = :id")
     LiveData<Task> getTask(long id);
 
+    // READ all tasks
+    @Query("SELECT * FROM Task")
+    LiveData<List<Task>> getTasks();
+
+    // CREATE a new task
     @Insert
     long insertTask(Task task);
 
+    // DELETE a specific task
     @Query("DELETE FROM Task WHERE id = :taskId")
     int deleteTask(long taskId);
 
 
     // -- Sort list --
+
+    // READ all task sorted by name ASC
     @Query("SELECT * from Task ORDER BY name ASC")
     LiveData<List<Task>> getTasksByNameASC();
 
+    // READ all task sorted by name DESC
     @Query("SELECT * from Task ORDER BY name DESC")
     LiveData<List<Task>> getTasksByNameDESC();
 
+    // READ all task sorted by date ASC
     @Query("SELECT * from Task ORDER BY creationTimestamp ASC")
     LiveData<List<Task>> getTasksByDateASC();
 
+    // READ all task sorted by date DESC
     @Query("SELECT * from Task ORDER BY creationTimestamp DESC")
     LiveData<List<Task>> getTasksByDateDESC();
 
