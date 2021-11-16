@@ -21,6 +21,7 @@ public class ProjectRepository {
     }
 
     // Return a single project
+    // used for tests
     public LiveData<Project> getProject(long projectId) {
         return this.mProjectDao.getDaoProject(projectId);
     }

@@ -7,8 +7,6 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
-import java.util.Comparator;
-
 /**
  * <p>Model for the tasks of the application.</p>
  *
@@ -35,7 +33,6 @@ public class Task {
      * The name of the task
      */
     // Suppress warning because setName is called in constructor
-    @SuppressWarnings("NullableProblems")
     @NonNull
     private String name;
 
@@ -52,7 +49,7 @@ public class Task {
      * @param name              the name of the task to set
      * @param creationTimestamp the timestamp when the task has been created to set
      */
-    public Task(long id, long projectId, @NonNull String name, long creationTimestamp) {
+    public Task(long id, long projectId, String name, long creationTimestamp) {
         this.setId(id);
         this.setProjectId(projectId);
         this.setName(name);

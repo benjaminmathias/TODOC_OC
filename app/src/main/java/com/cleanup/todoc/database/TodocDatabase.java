@@ -49,7 +49,7 @@ public abstract class TodocDatabase extends RoomDatabase {
     }
 
     // Callback executed ONLY the FIRST time the app is opened to add Projects to the Project Table
-    private static RoomDatabase.Callback prepopulateDatabase = new RoomDatabase.Callback() {
+    private static final RoomDatabase.Callback prepopulateDatabase = new RoomDatabase.Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);

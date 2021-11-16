@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
-import androidx.room.RoomDatabase;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -28,15 +27,15 @@ public class TaskDaoTest {
     private TodocDatabase dataBase;
 
     // DATA FOR TEST
-    private static Task TASK_DEMO = new Task(0, 1L, "A", 1);
-    private static Task TASK_DEMO_2 = new Task(0, 1L, "B", 2);
-    private static Project PROJECT_DEMO = new Project(1L, "Test Project", 0);
+    private static final Task TASK_DEMO = new Task(0, 1L, "A", 1);
+    private static final Task TASK_DEMO_2 = new Task(0, 1L, "B", 2);
+    private static final Project PROJECT_DEMO = new Project(1L, "Test Project", 0);
 
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     @Before
-    public void initDb() throws Exception {
+    public void initDb() {
         this.dataBase = Room.inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext(),
                 TodocDatabase.class)
                 .allowMainThreadQueries()
@@ -46,7 +45,7 @@ public class TaskDaoTest {
     }
 
     @After
-    public void closeDb() throws Exception {
+    public void closeDb() {
         dataBase.clearAllTables();
         dataBase.close();
     }

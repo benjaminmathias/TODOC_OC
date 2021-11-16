@@ -45,6 +45,7 @@ public class TaskRepository {
     }
 
     // Return a single task
+    // used for tests
     public LiveData<Task> getTask(long taskId) {
         return mTaskDao.getTask(taskId);
     }

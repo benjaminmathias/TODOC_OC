@@ -26,14 +26,14 @@ public class ProjectDaoTest {
     private TodocDatabase dataBase;
 
     // DATA FOR TEST ONLY
-    private static long PROJECT_ID = 10L;
-    private static Project PROJECT_DEMO = new Project(PROJECT_ID, "Test Project", 0);
-    private static Project PROJECT_DEMO_2 = new Project(20, "Test Project 2", 0);
+    private static final long PROJECT_ID = 10L;
+    private static final Project PROJECT_DEMO = new Project(PROJECT_ID, "Test Project", 0);
+    private static final Project PROJECT_DEMO_2 = new Project(20, "Test Project 2", 0);
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     @Before
-    public void initDb() throws Exception {
+    public void initDb() {
         this.dataBase = Room.inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext(),
                 TodocDatabase.class)
                 .allowMainThreadQueries()
@@ -41,7 +41,7 @@ public class ProjectDaoTest {
     }
 
     @After
-    public void closeDb() throws Exception {
+    public void closeDb() {
         dataBase.clearAllTables();
         dataBase.close();
     }

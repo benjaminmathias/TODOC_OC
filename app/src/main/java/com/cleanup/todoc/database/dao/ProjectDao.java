@@ -23,6 +23,6 @@ public interface ProjectDao {
 
     // CREATE a new project (used for tests)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long insertProject(Project project);
+    void insertProject(Project project);
 
 }

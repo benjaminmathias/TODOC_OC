@@ -22,11 +22,11 @@ public interface TaskDao {
 
     // CREATE a new task
     @Insert
-    long insertTask(Task task);
+    void insertTask(Task task);
 
     // DELETE a specific task
     @Query("DELETE FROM Task WHERE id = :taskId")
-    int deleteTask(long taskId);
+    void deleteTask(long taskId);
 
 
     // -- Sort list --
